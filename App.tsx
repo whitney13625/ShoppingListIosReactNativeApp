@@ -15,7 +15,7 @@ export type RootStackParamList = {
   Main: undefined;
   Login: undefined;
   ShoppingItemDetail: { item?: ShoppingItem }; // optional = 新增模式
-  CategoriesDetail: { id: number; title: string };
+  //CategoriesDetail: { id: number; title: string };
 };
 
 export type TabParamList = {
@@ -88,53 +88,3 @@ export default function App() {
     </AuthProvider>
   );
 }
-
-/*
-export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // App 啟動時檢查是否已有 token
-  useEffect(() => {
-    const checkToken = async () => {
-      const token = await tokenStorage.get();
-      setIsAuthenticated(!!token);
-      setIsLoading(false);
-    };
-    checkToken();
-  }, []);
-
-  // 還在檢查 token，顯示 loading
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
-    );
-  }
-
-  return (
-    <NavigationContainer>
-      {isAuthenticated ? (
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Main"
-            component={TabNavigator}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="ShoppingItemDetail" component={ShoppingItemDetailScreen} />
-        </Stack.Navigator>
-      ) : (
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Login"
-            options={{ headerShown: false }}
-          >
-            {() => <LoginScreen onLoginSuccess={() => setIsAuthenticated(true)} />}
-          </Stack.Screen>
-        </Stack.Navigator>
-      )}
-    </NavigationContainer>
-  );
-}
-*/

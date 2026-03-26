@@ -41,7 +41,6 @@ export default function CategoriesScreen({ navigation }: Props) {
     );
 
     useLayoutEffect(() => {
-        console.log('useLayoutEffect called', navigation); // 加這行
         navigation.setOptions({
         headerLeft: () => (
             <TouchableOpacity style={{ marginLeft: 16 }} onPress={logout}>
