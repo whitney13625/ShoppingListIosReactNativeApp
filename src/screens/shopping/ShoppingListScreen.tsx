@@ -22,6 +22,7 @@ type Props = CompositeScreenProps<
 
 export default function ShoppingListScreen({ navigation }: Props) {    
     const [shoppingItems, setShoppingItems] = useState<ShoppingItem[]>([]);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     const stackNavigation = useAppNavigation();
 
@@ -69,34 +70,46 @@ export default function ShoppingListScreen({ navigation }: Props) {
         ));
     }
 
-  return (
-    <View style={commonStyles.container}>
-      <Text style={commonStyles.title}>Shopping List</Text>
-      <FlatList 
-        style={commonStyles.list} 
-        data={shoppingItems} 
-        renderItem={( { item } ) => (
-            <TouchableOpacity
-                style={styles.rowContent}
-                onPress={() => navigation.navigate('ShoppingItemDetail', { item: item }) } 
-            >
-                <View style={styles.rowContentLeft}>
-                    <Text style={styles.itemName}>{item.name}</Text>
-                    <Text style={styles.itemNormal}>Quantity: {item.quantity}</Text>
-                    <Text style={styles.itemGray}>Category: {item.category.name}</Text>
-                </View>
-                <View style={styles.rowContentRight}>
-                    <Text style={styles.itemNormal}>Purchased?</Text>
-                    <Switch style={{ alignSelf: 'flex-end' }}
-                        value={item.purchased}
-                        onValueChange={(newValue) => handleToggle(item.id, newValue)}
-                    />
-                </View>
-                <DisclosureIndicator />
-            </TouchableOpacity>
-        )} />
-    </View>
-  );
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+        try {
+            const response = await shoppingApi.getAll();
+            setShoppingItems(response.data);
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
+
+    return (
+        <View style={commonStyles.container}>
+            <Text style={commonStyles.title}>Shopping List</Text>
+            <FlatList 
+                style={commonStyles.list} 
+                data={shoppingItems} 
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+                renderItem={( { item } ) => (
+                    <TouchableOpacity
+                        style={styles.rowContent}
+                        onPress={() => navigation.navigate('ShoppingItemDetail', { item: item }) } 
+                    >
+                        <View style={styles.rowContentLeft}>
+                            <Text style={styles.itemName}>{item.name}</Text>
+                            <Text style={styles.itemNormal}>Quantity: {item.quantity}</Text>
+                            <Text style={styles.itemGray}>Category: {item.category.name}</Text>
+                        </View>
+                        <View style={styles.rowContentRight}>
+                            <Text style={styles.itemNormal}>Purchased?</Text>
+                            <Switch style={{ alignSelf: 'flex-end' }}
+                                value={item.purchased}
+                                onValueChange={(newValue) => handleToggle(item.id, newValue)}
+                            />
+                        </View>
+                        <DisclosureIndicator />
+                    </TouchableOpacity>
+                )} />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
