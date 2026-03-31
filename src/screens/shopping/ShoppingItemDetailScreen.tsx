@@ -11,7 +11,6 @@ import { Stepper } from '../../components/Stepper';
 import { CategoryPicker } from '../../components/CategoryPicker';
 import { RootStackParamList } from '../../../App';
 import { ActionSheetIOS, Platform } from 'react-native';
-import { Expand } from '../../components/Icons';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ShoppingItemDetail'>;
 

@@ -15,6 +15,7 @@ import { AddIcon, DisclosureIndicator } from '../../components/Icons';
 import { useAppNavigation } from '../../hooks/useAppNavigation';
 import { useAuth } from '../../context/AuthContext';
 import { Swipeable } from 'react-native-gesture-handler';
+import { useOptimisticUpdate } from '../../hooks/useOptimisticUpdate';
 
 
 type Props = CompositeScreenProps<
@@ -29,6 +30,7 @@ export default function ShoppingListScreen({ navigation }: Props) {
     const stackNavigation = useAppNavigation();
 
     const { logout } = useAuth();
+    const { execute: executeSetShoppingItems } = useOptimisticUpdate(setShoppingItems);
 
     useFocusEffect(
         useCallback(() => {
@@ -65,20 +67,17 @@ export default function ShoppingListScreen({ navigation }: Props) {
         const item =shoppingItems.find(i => i.id === itemId);
         if (!item) return;
 
-    const previousValue = item.purchased;
+        const previousValue = item.purchased;
 
-        setShoppingItems(prev => prev.map(i => 
-        i.id === itemId ? { ...i, purchased: newValue } : i
-    ));
-        try {
-            await shoppingApi.update(itemId, { purchased: newValue });
-        } catch (error) {
-            console.log('Error updating item:', error);
-            setShoppingItems(prev => prev.map(i => 
+        executeSetShoppingItems(
+            prev => prev.map(i => 
+                i.id === itemId ? { ...i, purchased: newValue } : i
+            ),
+            () => shoppingApi.update(itemId, { purchased: newValue }),
+            prev => prev.map(i => 
                 i.id === itemId ? { ...i, purchased: previousValue } : i
-            ));
-        }
-        
+            )
+        );
     }
 
     const handleRefresh = async () => {
@@ -91,10 +90,17 @@ export default function ShoppingListScreen({ navigation }: Props) {
         }
     };
 
-    const handleDelete = async (itemId: string) => {
-        await shoppingApi.delete(itemId);
-        setShoppingItems(items => items.filter(i => i.id !== itemId));
-    };
+    async function handleDelete(itemId: string) {
+
+        const item = shoppingItems.find(i => i.id === itemId);
+        if (!item) return;
+
+        executeSetShoppingItems(
+            prev => prev.filter(i => i.id !== itemId),
+            () => shoppingApi.delete(itemId),
+            prev => [...prev, item]
+        );
+    }
 
     const renderRightActions = (itemId: string) => (
     <TouchableOpacity

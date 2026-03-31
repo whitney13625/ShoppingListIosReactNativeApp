@@ -23,6 +23,6 @@ export const shoppingApi = {
     },
 
     delete: async (id: string): Promise<void> => {
-        await apiClient.delete(`/shopping/items/${id}`);
+        await apiClient.delete(`/shopping/${id}`);
     },
 };
