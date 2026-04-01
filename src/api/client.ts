@@ -9,6 +9,11 @@ const PORT = process.env.EXPO_PUBLIC_API_PORT;
 const BASE_URL = `http://${HOST}:${PORT}/api`;
 const TOKEN_KEY = 'auth_token';
 
+let onUnauthorized: (() => void) | null = null;
+
+export function setUnauthorizedHandler(handler: () => void) {
+  onUnauthorized = handler;
+}
 
 // 對應你 Swift 的 HttpProtocol
 export const apiClient = axios.create({
@@ -28,13 +33,12 @@ apiClient.interceptors.request.use(async (config) => {
   return config;
 });
 
-// Response interceptor — 統一處理 401
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
       await AsyncStorage.removeItem(TOKEN_KEY);
-      // 之後這裡會加跳回 Login 的邏輯
+      onUnauthorized?.(); 
     }
     return Promise.reject(error);
   }

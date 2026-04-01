@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { tokenStorage } from '../api/client';
+import { tokenStorage, setUnauthorizedHandler } from '../api/client';
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -15,12 +15,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const checkToken = async () => {
-      const token = await tokenStorage.get();
-      setIsAuthenticated(!!token);
-      setIsLoading(false);
-    };
-    checkToken();
+     setUnauthorizedHandler(logout);
+     setIsLoading(false);
   }, []);
 
   const login = async (token: string) => {
