@@ -1,17 +1,20 @@
-import { useState, useLayoutEffect, useCallback } from 'react';
+import { useLayoutEffect, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { 
-  View, Text, TouchableOpacity
+  View, Text, TouchableOpacity, FlatList, StyleSheet
 } from 'react-native';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { ShoppingItem } from '../../types';
+import { Category } from '../../types';
 import { categoriesApi } from '../../api/categoriesApi';
+import { commonStyles } from '../../styles/common';
 import { RootStackParamList, TabParamList } from '../../../App';
-import { AddIcon } from '../../components/Icons';
+import { AddIcon, DisclosureIndicator } from '../../components/Icons';
 import { useAppNavigation } from '../../hooks/useAppNavigation';
 import { useAuth } from '../../context/AuthContext';
+import { Swipeable } from 'react-native-gesture-handler';
+import { useListScreen } from '../../hooks/useListScreen';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, 'Categories'>,
@@ -19,27 +22,18 @@ type Props = CompositeScreenProps<
 >;
 
 export default function CategoriesScreen({ navigation }: Props) {    
-    const [shoppingItems, setShoppingItems] = useState<ShoppingItem[]>([]);
-
     const stackNavigation = useAppNavigation();
-
-    const { logout } = useAuth();
-
-    useFocusEffect(
-        useCallback(() => {
-            categoriesApi.getAll()
-            .then(response => {
-                setShoppingItems(response.data);
-            })
-            .catch(error => {
-                console.log('fetch error:', error.response?.status);
-                if (error.response?.status === 401) {
-                    logout(); // TODO: refrehh token and retry
-                }
-            })
-        }, [])
-    );
-
+        const { logout } = useAuth();
+    
+        const { 
+            items: categories, 
+            setItems: setCategories,
+            isRefreshing, 
+            handleRefresh, 
+            handleDelete,
+            execute: executeSetShoppingItems 
+        } = useListScreen<Category>(categoriesApi.getAll);
+    
     useLayoutEffect(() => {
         navigation.setOptions({
         headerLeft: () => (
@@ -55,9 +49,47 @@ export default function CategoriesScreen({ navigation }: Props) {
         });
     }, [navigation]);
 
+    const renderRightActions = (itemId: string) => (
+        <TouchableOpacity
+            style={commonStyles.deleteButton}
+            onPress={() => handleDelete(itemId, () => categoriesApi.delete(itemId))}
+        >
+            <Text style={commonStyles.deleteText}>Delete</Text>
+        </TouchableOpacity>
+    );
+
   return (
-    <View>
-    <Text >Placeholder view</Text>
+    <View style={commonStyles.container}>
+        <Text style={commonStyles.title}>Categories</Text>
+            <FlatList 
+                style={commonStyles.list} 
+                data={categories} 
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+                renderItem={( { item } ) => (
+                    <Swipeable renderRightActions={() => renderRightActions(item.id)}>
+                    <TouchableOpacity
+                        style={styles.rowContent}
+                        onPress={() => navigation.navigate('CategoriesDetail', { category: item }) } 
+                    >
+                        <View>
+                            <Text>{item.name}</Text>
+                        </View>
+                        <DisclosureIndicator />
+                    </TouchableOpacity>
+                    </Swipeable>
+                )} 
+            />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+    rowContent: {
+        flexDirection: 'row',
+        alignSelf: 'flex-start',
+        alignItems: 'flex-start',
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+    },
+});

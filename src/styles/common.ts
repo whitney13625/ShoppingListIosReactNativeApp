@@ -25,4 +25,14 @@ export const commonStyles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
+    deleteButton: {
+        backgroundColor: '#FF3B30',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 80,
+    },
+    deleteText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
 });

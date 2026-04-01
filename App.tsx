@@ -1,5 +1,4 @@
 import 'react-native-gesture-handler';
-import { Swipeable } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -8,7 +7,8 @@ import { ActivityIndicator, View, Text, TouchableOpacity } from 'react-native';
 
 import LoginScreen from './src/screens/auth/LoginScreen';
 import CategoriesScreen from './src/screens/categories/CategoriesScreen';
-import { ShoppingItem } from './src/types';
+import CategoriesDetailScreen from './src/screens/categories/CategoriesDetailScreen';
+import { ShoppingItem, Category } from './src/types';
 import ShoppingItemDetailScreen from './src/screens/shopping/ShoppingItemDetailScreen';
 import ShoppingListScreen from './src/screens/shopping/ShoppingListScreen';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
@@ -18,7 +18,7 @@ export type RootStackParamList = {
   Main: undefined;
   Login: undefined;
   ShoppingItemDetail: { item?: ShoppingItem }; // optional = 新增模式
-  //CategoriesDetail: { id: number; title: string };
+  CategoriesDetail: { category?: Category };
 };
 
 export type TabParamList = {
@@ -71,6 +71,7 @@ function AppNavigator() {
         <Stack.Navigator>
           <Stack.Screen name="Main" component={TabNavigator} options={{ headerShown: false }} />
           <Stack.Screen name="ShoppingItemDetail" component={ShoppingItemDetailScreen} />
+          <Stack.Screen name="CategoriesDetail" component={CategoriesDetailScreen} />
         </Stack.Navigator>
       ) : (
         <Stack.Navigator>

@@ -15,7 +15,6 @@ export function setUnauthorizedHandler(handler: () => void) {
   onUnauthorized = handler;
 }
 
-// 對應你 Swift 的 HttpProtocol
 export const apiClient = axios.create({
   baseURL: BASE_URL,
   headers: {
@@ -23,8 +22,6 @@ export const apiClient = axios.create({
   },
 });
 
-// Request interceptor — 自動加 JWT token
-// 對應你 Swift 的 authRequired 邏輯
 apiClient.interceptors.request.use(async (config) => {
   const token = await AsyncStorage.getItem(TOKEN_KEY);
   if (token) {
@@ -44,7 +41,7 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Token 管理 helper functions
+// Token management helper functions
 export const tokenStorage = {
   save: (token: string) => AsyncStorage.setItem(TOKEN_KEY, token),
   get: () => AsyncStorage.getItem(TOKEN_KEY),

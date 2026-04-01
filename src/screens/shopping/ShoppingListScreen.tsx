@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useCallback } from 'react';
+import { useLayoutEffect, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { 
   View, Text, FlatList, StyleSheet, TouchableOpacity, 
@@ -15,7 +15,7 @@ import { AddIcon, DisclosureIndicator } from '../../components/Icons';
 import { useAppNavigation } from '../../hooks/useAppNavigation';
 import { useAuth } from '../../context/AuthContext';
 import { Swipeable } from 'react-native-gesture-handler';
-import { useOptimisticUpdate } from '../../hooks/useOptimisticUpdate';
+import { useListScreen } from '../../hooks/useListScreen';
 
 
 type Props = CompositeScreenProps<
@@ -24,28 +24,19 @@ type Props = CompositeScreenProps<
 >;
 
 export default function ShoppingListScreen({ navigation }: Props) {    
-    const [shoppingItems, setShoppingItems] = useState<ShoppingItem[]>([]);
-    const [isRefreshing, setIsRefreshing] = useState(false);
-
+    
     const stackNavigation = useAppNavigation();
-
     const { logout } = useAuth();
-    const { execute: executeSetShoppingItems } = useOptimisticUpdate(setShoppingItems);
 
-    useFocusEffect(
-        useCallback(() => {
-            shoppingApi.getAll()
-            .then(response => {
-                setShoppingItems(response.data);
-            })
-            .catch(error => {
-                console.log('fetch error:', error.response?.status);
-                if (error.response?.status === 401) {
-                    logout(); // TODO: refrehh token and retry
-                }
-            })
-        }, [])
-    );
+    const { 
+        items: shoppingItems, 
+        setItems: setShoppingItems,
+        isRefreshing, 
+        handleRefresh, 
+        handleDelete,
+        execute: executeSetShoppingItems 
+    } = useListScreen<ShoppingItem>(shoppingApi.getAll);
+
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -64,7 +55,7 @@ export default function ShoppingListScreen({ navigation }: Props) {
 
     async function handleToggle(itemId: string, newValue: boolean) {
         console.log(`Toggled item ${itemId} to ${newValue}`);
-        const item =shoppingItems.find(i => i.id === itemId);
+        const item = shoppingItems.find(i => i.id === itemId);
         if (!item) return;
 
         const previousValue = item.purchased;
@@ -80,37 +71,15 @@ export default function ShoppingListScreen({ navigation }: Props) {
         );
     }
 
-    const handleRefresh = async () => {
-        setIsRefreshing(true);
-        try {
-            const response = await shoppingApi.getAll();
-            setShoppingItems(response.data);
-        } finally {
-            setIsRefreshing(false);
-        }
-    };
-
-    async function handleDelete(itemId: string) {
-
-        const item = shoppingItems.find(i => i.id === itemId);
-        if (!item) return;
-
-        executeSetShoppingItems(
-            prev => prev.filter(i => i.id !== itemId),
-            () => shoppingApi.delete(itemId),
-            prev => [...prev, item]
-        );
-    }
-
     const renderRightActions = (itemId: string) => (
-    <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => handleDelete(itemId)}
-    >
-        <Text style={styles.deleteText}>Delete</Text>
-    </TouchableOpacity>
+        <TouchableOpacity
+            style={commonStyles.deleteButton}
+            onPress={() => handleDelete(itemId, () => shoppingApi.delete(itemId))}
+        >
+            <Text style={commonStyles.deleteText}>Delete</Text>
+        </TouchableOpacity>
     );
-
+    
     return (
         <View style={commonStyles.container}>
             <Text style={commonStyles.title}>Shopping List</Text>
@@ -176,15 +145,5 @@ const styles = StyleSheet.create({
     itemGray: {
         fontSize: 18,
         color: '#666',
-    },
-    deleteButton: {
-        backgroundColor: '#FF3B30',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 80,
-    },
-    deleteText: {
-        color: '#fff',
-        fontWeight: 'bold',
     },
 });
