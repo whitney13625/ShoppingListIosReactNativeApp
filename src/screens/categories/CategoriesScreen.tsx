@@ -33,17 +33,12 @@ export default function CategoriesScreen({ navigation }: Props) {
     
     useLayoutEffect(() => {
         navigation.setOptions({
-        headerLeft: () => (
-            <TouchableOpacity style={{ marginLeft: 16 }} onPress={logout}>
-            <Text style={{ color: '#007AFF' }}>Logout</Text>
-            </TouchableOpacity>
-        ),
-        headerRight: () => (
-            <TouchableOpacity style={{ marginEnd: 20 }} onPress={() => stackNavigation.navigate('ShoppingItemDetail', {})}>
-            <AddIcon/>
-            </TouchableOpacity>
-        ),
-        });
+            headerRight: () => (
+                <TouchableOpacity style={{ marginEnd: 20 }} onPress={() => stackNavigation.navigate('ShoppingItemDetail', {})}>
+                <AddIcon/>
+                </TouchableOpacity>
+            ),
+            });
     }, [navigation]);
 
     const renderRightActions = (itemId: string) => (

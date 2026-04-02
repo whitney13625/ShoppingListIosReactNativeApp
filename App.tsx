@@ -13,6 +13,7 @@ import ShoppingItemDetailScreen from './src/screens/shopping/ShoppingItemDetailS
 import ShoppingListScreen from './src/screens/shopping/ShoppingListScreen';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import SettingsScreen from './src/screens/settings/SettingsScreen';
 
 export type RootStackParamList = {
   Main: undefined;
@@ -24,6 +25,7 @@ export type RootStackParamList = {
 export type TabParamList = {
   ShoppingList: undefined;
   Categories: undefined;
+  Settings: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -39,8 +41,11 @@ function TabNavigator() {
           if (route.name === 'ShoppingList') {
             iconName = focused ? 'list' : 'list-outline';
           }
-          else {
+          else if (route.name === 'Categories') {
             iconName = focused ? 'folder' : 'folder-outline';
+          }
+          else {
+            iconName = focused ? 'settings' : 'settings-outline';
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -50,6 +55,7 @@ function TabNavigator() {
     >
       <Tab.Screen name="ShoppingList" component={ShoppingListScreen} />
       <Tab.Screen name="Categories" component={CategoriesScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
 }
