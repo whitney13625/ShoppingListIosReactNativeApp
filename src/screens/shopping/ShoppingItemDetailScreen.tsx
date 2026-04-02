@@ -10,7 +10,6 @@ import { FormRow } from '../../components/FormRow';
 import { Stepper } from '../../components/Stepper';
 import { CategoryPicker } from '../../components/CategoryPicker';
 import { RootStackParamList } from '../../../App';
-import { ActionSheetIOS, Platform } from 'react-native';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ShoppingItemDetail'>;
 
@@ -35,24 +34,8 @@ export default function ShoppingItemDetailScreen({ navigation, route }: Props) {
             setCategoryId(item.category.id);
             setPurchased(item.purchased);
         }
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    const showCategoryPicker = () => {
-    if (Platform.OS === 'ios') {
-        ActionSheetIOS.showActionSheetWithOptions(
-        {
-            options: [...categories.map(c => c.name), 'Cancel'],
-            cancelButtonIndex: categories.length,
-        },
-        (index) => {
-            if (index < categories.length) {
-            setCategoryId(categories[index].id);
-            }
-        }
-        );
-    }
-    };
 
     function handleSave() {
         const itemData = {

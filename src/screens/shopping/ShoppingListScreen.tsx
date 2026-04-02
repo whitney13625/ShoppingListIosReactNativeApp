@@ -1,4 +1,4 @@
-import { useLayoutEffect, useCallback } from 'react';
+import { useLayoutEffect } from 'react';
 import { 
   View, Text, FlatList, StyleSheet, TouchableOpacity, Switch
 } from 'react-native';
@@ -11,7 +11,6 @@ import { commonStyles } from '../../styles/common';
 import { RootStackParamList, TabParamList } from '../../../App';
 import { AddIcon, DisclosureIndicator } from '../../components/Icons';
 import { useAppNavigation } from '../../hooks/useAppNavigation';
-import { useAuth } from '../../context/AuthContext';
 import { Swipeable } from 'react-native-gesture-handler';
 import { useListScreen } from '../../hooks/useListScreen';
 
@@ -26,8 +25,7 @@ export default function ShoppingListScreen({ navigation }: Props) {
     const stackNavigation = useAppNavigation();
 
     const { 
-        items: shoppingItems, 
-        setItems: setShoppingItems,
+        items: shoppingItems,
         isRefreshing, 
         handleRefresh, 
         handleDelete,
@@ -43,7 +41,7 @@ export default function ShoppingListScreen({ navigation }: Props) {
                 </TouchableOpacity>
             ),
         });
-    }, [navigation]);
+    }, [navigation, stackNavigation]);
 
     async function handleToggle(itemId: string, newValue: boolean) {
         const item = shoppingItems.find(i => i.id === itemId);

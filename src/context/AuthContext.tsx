@@ -15,15 +15,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
+    
      setUnauthorizedHandler(logout);
 
     const checkToken = async () => {
-    const token = await tokenStorage.get();
-    setIsAuthenticated(!!token);
-    setIsLoading(false);
-  };
-  
-  checkToken();
+      const token = await tokenStorage.get();
+      setIsAuthenticated(!!token);
+      setIsLoading(false);
+    };
+    
+    checkToken();
   }, []);
   
   const login = async (token: string) => {

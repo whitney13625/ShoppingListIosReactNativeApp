@@ -19,5 +19,5 @@ export function Expand({ style }: IconProps) {
 }
 
 export function AddIcon({ style }: IconProps) {
-  return (<Ionicons name="add" size={24} color="#007AFF" />);
+  return (<Ionicons style={style} name="add" size={24} color="#007AFF" />);
 }

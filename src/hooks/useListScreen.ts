@@ -17,7 +17,7 @@ export function useListScreen<T extends { id: string }>(
       .catch(error => {
                 console.error(error.response?.status);
             });
-    }, [])
+    }, [fetchFn])
   );
 
   const handleRefresh = async () => {

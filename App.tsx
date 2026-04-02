@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { ActivityIndicator, View, Text, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
 import LoginScreen from './src/screens/auth/LoginScreen';
 import CategoriesScreen from './src/screens/categories/CategoriesScreen';

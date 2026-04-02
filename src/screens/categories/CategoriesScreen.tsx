@@ -11,7 +11,6 @@ import { commonStyles } from '../../styles/common';
 import { RootStackParamList, TabParamList } from '../../../App';
 import { AddIcon, DisclosureIndicator } from '../../components/Icons';
 import { useAppNavigation } from '../../hooks/useAppNavigation';
-import { useAuth } from '../../context/AuthContext';
 import { Swipeable } from 'react-native-gesture-handler';
 import { useListScreen } from '../../hooks/useListScreen';
 
@@ -37,7 +36,7 @@ export default function CategoriesScreen({ navigation }: Props) {
                 </TouchableOpacity>
             ),
             });
-    }, [navigation]);
+    }, [navigation, stackNavigation]);
 
     const renderRightActions = (itemId: string) => (
         <TouchableOpacity

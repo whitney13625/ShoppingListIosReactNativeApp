@@ -3,10 +3,6 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator 
 import { authApi } from '../../api/authApi';
 import { useAuth } from '../../context/AuthContext';
 
-type LoginScreenProps = {
-  onLoginSuccess: () => void;
-};
-
 export default function LoginScreen() {
 
     const [username, setUsername] = useState('');
@@ -19,7 +15,7 @@ export default function LoginScreen() {
         
         setLoading(true);
         setError(null);
-        
+
         try {
             const response = await authApi.login(username, password);
             await login(response.token); 
